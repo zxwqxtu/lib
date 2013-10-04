@@ -23,7 +23,7 @@ class Fsock
 
     public static function getBody($url='',$method="GET", $param = array(), $requestHeaders=array(), $port=80) {
         if (!empty($url)) {
-            self::$_content = self::url($url, $requestHeaders);   
+            self::$_content = self::url($url, $method, $param, $requestHeaders, $port);   
         } 
         $arr = explode(self::SOCK_EOL.self::SOCK_EOL, self::$_content);
         self::$_head = $arr[0];
@@ -33,7 +33,7 @@ class Fsock
 
     public static function getHead($url='',$method="GET", $param = array(), $requestHeaders=array(), $port=80) {
         if (!empty($url)) {
-            self::$_content = self::url($url, $requestHeaders);   
+            self::$_content = self::url($url, $method, $param, $requestHeaders, $port);   
         }
         $arr = explode(self::SOCK_EOL.self::SOCK_EOL, self::$_content);
         self::$_head = $arr[0];
@@ -42,7 +42,7 @@ class Fsock
     }
 
     public static function setHeader($headers) {
-        return self::$_requestHeader = array_merge(self::$_requestHeader, $headers));
+        return self::$_requestHeader = array_merge(self::$_requestHeader, $headers);
     }
 
     public static function getheader() {
@@ -70,22 +70,24 @@ class Fsock
             case 'POST':
                 self::setHeader(array('Content-Type'=>'application/x-www-form-urlencoded'));
             default:
-                self::setHeader(array('Content-Length'=>strlen($queryStr));
+                self::setHeader(array('Content-Length'=>strlen($queryStr)));
                 break;
             }
         }
 
-        $out = "Host: {$urlArr['host']}".self::SOCK_EOL;
+        $out = '';
 
         $query = !empty($urlArr['path'])?$urlArr['path']:'/';
         $query .= empty($urlArr['query'])?'':'?'.$urlArr['query'];
         $method = self::$_method;
         $out .= "{$method} {$query} HTTP/1.1".self::SOCK_EOL;
-        self::setHeader(array('Connection'=>'Close');
+        $out .= "Host: {$urlArr['host']}".self::SOCK_EOL;
+
+        self::setHeader(array('Connection'=>'Close'));
         self::setHeader($headers);
 
-        foreach(self::$_requestHeaders as $k=>$v) {
-            $out .= $k.':'.$v.self::SOCK_EOL;
+        foreach(self::$_requestHeader as $k=>$v) {
+            $out .= $k.': '.$v.self::SOCK_EOL;
         }
         $out .= self::SOCK_EOL;
         if (self::$_method != 'GET' && !empty($queryStr)) {
