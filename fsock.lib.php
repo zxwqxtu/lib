@@ -53,7 +53,7 @@ class Fsock
         $urlArr = parse_url($url);
         $host = $urlArr['host'];
         if ($urlArr['scheme'] == 'https') {
-            $self::$_port = 443;
+            self::$_port = 443;
             $host = 'ssl://'.$host;
         }
         $fp = fsockopen($host, self::$_port, $errno, $errstr, self::$_timeOut);
@@ -93,7 +93,6 @@ class Fsock
         if (self::$_method != 'GET' && !empty($queryStr)) {
             $out .= $queryStr;
         } 
-        
         fwrite($fp, $out);
         self::$_head = self::$_body = self::$_content = '';
         while (!feof($fp)) {
