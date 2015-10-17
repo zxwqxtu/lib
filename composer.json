@@ -3,5 +3,9 @@
     "description": "一些公共类库",
     "require": {
         "php": ">=4.0.0"
+    },
+    "autoload": {
+        "classmap": ["libs/"]
     }
+
 }
